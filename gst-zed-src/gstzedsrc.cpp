@@ -1934,7 +1934,11 @@ static GstFlowReturn gst_zedsrc_fill( GstPushSrc * psrc, GstBuffer * buf )
     // ----> ZED grab
     ret = src->zed.grab(src->zedRtParams);
 
-    if( ret!=sl::ERROR_CODE::SUCCESS )
+    if( ret==sl::ERROR_CODE::END_OF_SVOFILE_REACHED )
+    {
+        return GST_FLOW_EOS;
+    }
+    else if( ret!=sl::ERROR_CODE::SUCCESS )
     {
         GST_ELEMENT_ERROR (src, RESOURCE, FAILED,
                            ("Grabbing failed with error '%s'", sl::toString(ret).c_str()), (NULL));
@@ -1989,7 +1993,11 @@ static GstFlowReturn gst_zedsrc_fill( GstPushSrc * psrc, GstBuffer * buf )
         ret = src->zed.retrieveMeasure(depth_data, sl::MEASURE::DEPTH, sl::MEM::CPU );
     }
 
-    if( ret!=sl::ERROR_CODE::SUCCESS )
+    if( ret==sl::ERROR_CODE::END_OF_SVOFILE_REACHED )
+    {
+        return GST_FLOW_EOS;
+    }
+    else if( ret!=sl::ERROR_CODE::SUCCESS )
     {
         GST_ELEMENT_ERROR (src, RESOURCE, FAILED,
                            ("Grabbing failed with error '%s'", sl::toString(ret).c_str()), (NULL));
